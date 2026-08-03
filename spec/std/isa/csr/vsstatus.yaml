@@ -59,7 +59,13 @@ fields:
     type(): |
       return ($array_size(VUXLEN) > 1) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
-      return ($array_size(VUXLEN) > 1) ? UNDEFINED_LEGAL : VUXLEN[0];
+      if ($array_size(VUXLEN) == 1 && VUXLEN[0] == 32) {
+        return 0;
+      } else if ($array_size(VUXLEN) == 1 && VUXLEN[0] == 64) {
+        return 1;
+      } else {
+        return UNDEFINED_LEGAL;
+      }
   SPELP:
     location: 23
     long_name: VS-mode Previous Expected Landing Pad state
