@@ -623,6 +623,16 @@ fields:
       * When 1, interrupts that are not otherwise disabled with a field in `mie` are enabled.
 
     type: RW-H
+    sw_write(csr_value): |
+      if ((MXLEN == 64) && implemented?(ExtensionName::Smdbltrp)) {
+        if (csr_value.MDT == 1'b1) {
+          return 0;
+        } else {
+          return csr_value.MIE;
+        }
+      } else {
+        return csr_value.MIE;
+      }
     reset_value: 0
   SIE:
     location: 1
