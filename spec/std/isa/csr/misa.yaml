@@ -84,6 +84,13 @@ fields:
     definedBy:
       extension:
         name: D
+    sw_write(csr_value): |
+      if (csr_value.F == 0 && csr_value.D == 1) {
+        return 0;
+      }
+
+      # fall-through; write the intended value
+      return csr_value.D;
   F:
     location: 5
     description: |
@@ -93,7 +100,7 @@ fields:
       --
       Writing 0 to this field will cause all floating point (single and double precision) instructions to raise an `IllegalInstruction` exception.
 
-      Writing 0 to this field with `misa.D` set will result in UNDEFINED behavior.
+      Writing 0 to this field while writing 1 to `misa.D` results in both `misa.F` and `misa.D` being cleared.
       --
     type(): |
       return (implemented?(ExtensionName::F) && MUTABLE_MISA_F) ? CsrFieldType::RW : CsrFieldType::RO;
@@ -104,7 +111,7 @@ fields:
         name: F
     sw_write(csr_value): |
       if (csr_value.F == 0 && csr_value.D == 1) {
-        return UNDEFINED_LEGAL_DETERMINISTIC;
+        return 0;
       }
 
       # fall-through; write the intended value
